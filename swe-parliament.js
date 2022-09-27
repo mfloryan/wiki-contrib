@@ -80,7 +80,6 @@ let structured_parliaments = Object.keys(parliaments).map(year => {
     return {year: year, results: results}
 })
 
-
 function rect(x,y,width, height) {
   let node = {
     node: "rect",
@@ -105,14 +104,11 @@ function generateStripeForOneYear(year, x_y, size, party_mandates) {
     rollingMandates += party.mandates;
     let single_box_bottom = (rollingMandates / totalMandates) * size[1]
     
-    // let rectangle = rect(x, y, width, height, )
     let r = new svg.Rectangle(x_y[0], single_box_top+x_y[1], size[0], single_box_bottom-single_box_top)
     r.setAttribute('id', `bar${year}${party.code.toLowerCase()}`)
     r.addClass(`party${party.code.toLowerCase()}`)
     svgElements.push(r)
 
-    console.log(`<rect id="bar${year}${party.code.toLowerCase()}" class="party${party.code.toLowerCase()}" \
-      width="${size[0]}px" height="${(single_box_bottom-single_box_top)}px" x="${x_y[0]}px" y="${single_box_top+x_y[1]}px"/>`)
   })
 
   return svgElements
@@ -127,4 +123,4 @@ structured_parliaments.forEach(year => {
   allElements.push(...newElements)
 })
 
-console.log(allElements)
+allElements.forEach(e => console.log(e.toString()))
