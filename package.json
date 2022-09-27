@@ -4,5 +4,9 @@
   "description": "Utilities to generate content for Wikipedi",
   "main": "index.js",
   "author": "Marcin Floryan",
-  "license": "MIT"
+  "license": "MIT",
+  "type": "module",
+  "dependencies": {
+    "node-fetch": "^3.2.10"
+  }
 }
