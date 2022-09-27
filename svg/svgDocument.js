@@ -1,0 +1,5 @@
+class SvgDocument {
+
+}
+
+export { SvgDocument }
