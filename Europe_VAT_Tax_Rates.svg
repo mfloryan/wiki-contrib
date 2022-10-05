@@ -29,7 +29,7 @@
      #fi { fill:#11487d; } /* VAT: 24 */
      #fr { fill:#3782a8; } /* VAT: 20 */
      #hr { fill:#083972; } /* VAT: 25 */
-     #hu { } /* VAT: 27 */
+     #hu { fill:#001634; } /* VAT: 27 */
      #ie { fill:#1a5486; } /* VAT: 23 */
      #it { fill:#256593; } /* VAT: 22 */
      #lt { fill:#2d729c; } /* VAT: 21 */
@@ -43,6 +43,9 @@
      #se { fill:#083972; } /* VAT: 25 */
      #si { fill:#256593; } /* VAT: 22 */
      #sk { fill:#3782a8; } /* VAT: 20 */
+     #no { fill:#083972; } /* VAT: 25 */
+     #ch { fill:#ebf8de; } /* VAT: 7.7 */
+     #gb { fill:#3782a8; } /* VAT: 20 */
    </style>
   <title
      id="title1226">Blank map of the countries of europe</title>
