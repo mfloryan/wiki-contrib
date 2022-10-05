@@ -86,23 +86,16 @@
      inkscape:deskcolor="#d1d1d1"
      showguides="true" />
   <desc
-     id="desc6"> A blank Map of Europe. Every country has an id which is its ISO-3166-1-ALPHA2 code in lower case.
- Members of the EU have a class=&quot;eu&quot;, countries in europe (which I found turkey to be but russia not) have a class=&quot;europe&quot;.
- Certain countries are further subdivided the United Kingdom has gb-gbn for Great Britain and gb-nir for Northern Ireland. Russia is divided into ru-kgd for the Kaliningrad Oblast and ru-main for the Main body of Russia. There is the additional grouping #xb for the &quot;British Islands&quot; (the UK with its Crown Dependencies - Jersey, Guernsey and the Isle of Man) and the Kingdom of Denmark (Denmark, Faroe Islands, Greenland)
+     id="desc6"> A map of the countries of Europe with VAT tax rates visualised.
  
- Contributors.
- Original Image: (http://commons.wikimedia.org/wiki/Image:Europe_countries.svg) Júlio Reis (http://commons.wikimedia.org/wiki/User:Tintazul).
- Recolouring and tagging with country codes: Marian &quot;maix&quot; Sigler (http://commons.wikimedia.org/wiki/User:Maix)
- Improved geographical features: http://commons.wikimedia.org/wiki/User:W!B:
- Updated to reflect dissolution of Serbia &amp; Montenegro: http://commons.wikimedia.org/wiki/User:Zirland
- Updated to include British Crown Dependencies as seperate entities and regroup them as &quot;British Islands&quot;, with some simplifications to the XML and CSS: James Hardy (http://commons.wikimedia.org/wiki/User:MrWeeble)
- Validated (http://commons.wikimedia.org/wiki/User:CarolSpears)
- Changed the country code of Serbia to RS per http://en.wikipedia.org/wiki/Serbian_country_codes and the file http://www.iso.org/iso/iso3166_en_code_lists.txt (http://commons.wikimedia.org/wiki/User:TimothyBourke)
- Uploaded on behalf of User:Checkit, direct complaints to him plox: 'Moved countries out of the &quot;outlines&quot; group, removed &quot;outlines&quot; style class, remove separate style information for Russia' (http://commons.wikimedia.org/wiki/User:Collard)
- Updated various coastlines and boarders and added various islands not previously shown (details follow). Added Kosovo, Northern Cyprus, Crimea, Abkhazia, South Ossetia, Transnistria and Nagorno-Karabakh as disputed territories. Moved major lakes to their own object and added more. List of updated boarders/coastlines: British Isles (+ added Isle of Wight, Skye, various smaller islands), the Netherlands, Germany, Austria, Hungary, Czech Republic, Denmark, Sweden, Finland, Poland, Kaliningrad Oblast of the Russian Federation (and minor tweaks to Lithuania), Estonia, Ukraine, Moldova (minor), Romania, Bulgaria, Turkey, Greece, F.Y.R. Macedonia, Serbia, Bosnia and Herzegovina, Montenegro, Albania, Croatia, Italy (mainland and Sicily), Malta (http://commons.wikimedia.org/wiki/User:Alphathon).
- Added Bornholm (http://commons.wikimedia.org/wiki/User:Heb)
- 
- Released under CreativeCommons Attribution ShareAlike (http://creativecommons.org/licenses/by-sa/2.5/).
+     Based on: (https://commons.wikimedia.org/wiki/File:Blank_map_of_Europe_(with_disputed_regions).svg) 
+
+     VAT rates sourced from:
+     https://europa.eu/youreurope/business/taxation/vat/vat-rules-rates/index_en.htm
+     https://www4.skatteverket.se/rattsligvagledning/edition/2022.11/346823.html
+     https://taxsummaries.pwc.com/
+
+ Released under CreativeCommons Attribution ShareAlike (http://creativecommons.org/licenses/by-sa/4.0/).
 </desc>
   <defs
      id="defs3159">
