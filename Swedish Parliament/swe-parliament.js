@@ -114,6 +114,12 @@ function generateStripeForOneYear(year, x_y, size, party_mandates) {
   return svgElements
 }
 
+function generateCssStyles(parties) {
+  parties.forEach(p => {
+    console.log(`.party${p.code.toLowerCase()} { fill: ${p.colour} }`)
+  })
+}
+
 let allElements = []
 const single_year_slice_size = [20,200]
 let x_y = [20,20]
@@ -123,4 +129,5 @@ structured_parliaments.forEach(year => {
   allElements.push(...newElements)
 })
 
-allElements.forEach(e => console.log(e.toString()))
+// allElements.forEach(e => console.log(e.toString()))
+generateCssStyles(swedish_parties)

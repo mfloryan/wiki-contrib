@@ -1,7 +1,7 @@
 {
   "name": "wiki-contrib",
   "version": "1.0.0",
-  "description": "Utilities to generate content for Wikipedi",
+  "description": "Utilities to generate content for Wikipedia",
   "main": "index.js",
   "author": "Marcin Floryan",
   "license": "MIT",
