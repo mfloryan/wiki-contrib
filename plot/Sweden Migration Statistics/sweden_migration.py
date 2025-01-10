@@ -37,21 +37,19 @@ def load_data():
 def process_json_to_df(data_json):
     rows = []
     for entry in data_json["data"]:
-        fodelseland, kon, year = entry["key"]
+        _, gender, year = entry["key"]
         invandringar, utvandringar = entry["values"]
 
         rows.append(
             {
-                "gender": kon,
+                "gender": gender,
                 "year": year,
                 "in": int(invandringar),
                 "out": int(utvandringar),
             }
         )
 
-    df = pd.DataFrame(rows)
-
-    return df
+    return pd.DataFrame(rows)
 
 
 requests_cache.install_cache(
