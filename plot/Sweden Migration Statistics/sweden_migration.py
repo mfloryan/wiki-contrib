@@ -85,6 +85,7 @@ plt.rcParams.update(
         "ytick.labelsize": 14,
         "legend.fontsize": 14,
         "figure.titlesize": 20,
+        "svg.fonttype": "none"
     }
 )
 
