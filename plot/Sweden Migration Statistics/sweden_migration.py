@@ -60,6 +60,105 @@ requests_cache.install_cache(
 )
 
 
+def generate_plot(df):
+
+    fm.fontManager.addfont(
+        "/Users/mfloryan/Library/Fonts/LiberationSans-Regular.ttf"
+    )
+    fm.fontManager.addfont(
+        "/Users/mfloryan/Library/Fonts/LiberationSans-Bold.ttf"
+    )
+    plt.rcParams["font.sans-serif"] = ["Liberation Sans"]
+
+    plt.rcParams.update(
+        {
+            "font.size": 14,
+            "axes.labelsize": 16,
+            "axes.titlesize": 20,
+            "xtick.labelsize": 14,
+            "ytick.labelsize": 14,
+            "legend.fontsize": 14,
+            "figure.titlesize": 20,
+            "svg.fonttype": "none"
+        }
+    )
+
+    plt.figure(figsize=(12, 6))
+    ax = plt.gca()
+
+    plt.plot(
+        df["year"],
+        df["in"],
+        label="_nolegend_",
+        color="#2B6CB0",
+        linewidth=3,
+        alpha=0.4,
+    )
+    plt.plot(
+        df["year"],
+        df["in"],
+        label="immigration",
+        marker="o",
+        linestyle="none",
+        color="#2B6CB0",
+    )
+    plt.plot(
+        df["year"],
+        df["out"],
+        label="_nolegend_",
+        color="#C05621",
+        linewidth=3,
+        alpha=0.4,
+    )
+    plt.plot(
+        df["year"],
+        df["out"],
+        label="emigration",
+        marker="o",
+        linestyle="none",
+        color="#C05621",
+    )
+
+    plt.title("Swedish migration per year ", fontweight="bold")
+    plt.grid(True, linestyle="--", alpha=0.7)
+
+    plt.xticks(rotation=45)
+    plt.ylim(bottom=0)
+    plt.legend(facecolor="white", edgecolor="silver", borderpad=1)
+
+    ax.yaxis.set_major_formatter(
+        plt.FuncFormatter(lambda x, p: format(int(x), ","))
+    )
+
+    ax.tick_params(length=0)
+
+    for spine in ax.spines.values():
+        spine.set_color("silver")
+
+    plt.tight_layout()
+
+    footer_text = (
+        f"Source: Statistics Sweden {data['metadata'][0]['source']}"
+        f" - {data['metadata'][0]['label']}"
+        f" ({data['metadata'][0]['infofile']})"
+    )
+
+    plt.figtext(
+        0.08, 0.02, footer_text, wrap=True, ha="left", va="bottom", fontsize=10
+    )
+
+    plt.subplots_adjust(bottom=0.15)
+
+    plt.savefig(
+        ("Statistics Sweden (SCB) "
+         "annual Immigration and Emigration 2000-2023"
+         ".svg"),
+        dpi=150,
+        bbox_inches="tight",
+    )
+    plt.close()
+
+
 data = load_data()
 df = process_json_to_df(data)
 
@@ -67,95 +166,4 @@ yearly_totals = (
     df.groupby("year").agg({"in": "sum", "out": "sum"}).reset_index()
 )
 
-
-fm.fontManager.addfont(
-    "/Users/mfloryan/Library/Fonts/LiberationSans-Regular.ttf"
-)
-fm.fontManager.addfont("/Users/mfloryan/Library/Fonts/LiberationSans-Bold.ttf")
-plt.rcParams["font.sans-serif"] = ["Liberation Sans"]
-
-plt.rcParams.update(
-    {
-        "font.size": 14,
-        "axes.labelsize": 16,
-        "axes.titlesize": 20,
-        "xtick.labelsize": 14,
-        "ytick.labelsize": 14,
-        "legend.fontsize": 14,
-        "figure.titlesize": 20,
-        "svg.fonttype": "none"
-    }
-)
-
-plt.figure(figsize=(12, 6))
-# plt.style.use('seaborn-v0_8-whitegrid')
-ax = plt.gca()
-
-
-plt.plot(
-    yearly_totals["year"],
-    yearly_totals["in"],
-    label="_nolegend_",
-    color="#2B6CB0",
-    linewidth=3,
-    alpha=0.4,
-)
-plt.plot(
-    yearly_totals["year"],
-    yearly_totals["in"],
-    label="immigration",
-    marker="o",
-    linestyle="none",
-    color="#2B6CB0",
-)
-plt.plot(
-    yearly_totals["year"],
-    yearly_totals["out"],
-    label="_nolegend_",
-    color="#C05621",
-    linewidth=3,
-    alpha=0.4,
-)
-plt.plot(
-    yearly_totals["year"],
-    yearly_totals["out"],
-    label="emigration",
-    marker="o",
-    linestyle="none",
-    color="#C05621",
-)
-
-plt.gca().yaxis.set_major_formatter(
-    plt.FuncFormatter(lambda x, p: format(int(x), ","))
-)
-
-plt.title("Swedish migration per year ", fontweight="bold")
-plt.grid(True, linestyle="--", alpha=0.7)
-
-plt.xticks(rotation=45)
-plt.ylim(bottom=0)
-plt.legend(facecolor="white", edgecolor="silver", borderpad=1)
-
-ax.tick_params(length=0)
-
-for spine in ax.spines.values():
-    spine.set_color("silver")
-
-plt.tight_layout()
-
-footer_text = (
-    f"Source: Statistics Sweden {data['metadata'][0]['source']}"
-    f" - {data['metadata'][0]['label']} ({data['metadata'][0]['infofile']})"
-)
-
-plt.figtext(
-    0.08, 0.02, footer_text, wrap=True, ha="left", va="bottom", fontsize=10
-)
-plt.subplots_adjust(bottom=0.15)
-
-plt.savefig(
-    "Statistics Sweden (SCB) annual Immigration and Emigration 2000-2023.svg",
-    dpi=150,
-    bbox_inches="tight",
-)
-plt.close()
+generate_plot(yearly_totals)
