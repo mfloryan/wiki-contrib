@@ -79,51 +79,23 @@ def generate_plot(df):
             "ytick.labelsize": 14,
             "legend.fontsize": 14,
             "figure.titlesize": 20,
-            "svg.fonttype": "none"
+            "svg.fonttype": "none",
         }
     )
 
     plt.figure(figsize=(12, 6))
     ax = plt.gca()
 
-    plt.plot(
-        df["year"],
-        df["in"],
-        label="_nolegend_",
-        color="#2B6CB0",
-        linewidth=3,
-        alpha=0.4,
+    plt.bar(
+        df["year"], yearly_totals["in"], color="#4A90E2", label="immigration"
     )
-    plt.plot(
-        df["year"],
-        df["in"],
-        label="immigration",
-        marker="o",
-        linestyle="none",
-        color="#2B6CB0",
-    )
-    plt.plot(
-        df["year"],
-        df["out"],
-        label="_nolegend_",
-        color="#C05621",
-        linewidth=3,
-        alpha=0.4,
-    )
-    plt.plot(
-        df["year"],
-        df["out"],
-        label="emigration",
-        marker="o",
-        linestyle="none",
-        color="#C05621",
+    plt.bar(
+        df["year"], -yearly_totals["out"], color="#E27A4A", label="emigration"
     )
 
     plt.title("Swedish migration per year ", fontweight="bold")
     plt.grid(True, linestyle="--", alpha=0.7)
 
-    plt.xticks(rotation=45)
-    plt.ylim(bottom=0)
     plt.legend(facecolor="white", edgecolor="silver", borderpad=1)
 
     ax.yaxis.set_major_formatter(
@@ -134,6 +106,18 @@ def generate_plot(df):
 
     for spine in ax.spines.values():
         spine.set_color("silver")
+
+    plt.axhline(y=0, color="black", linewidth=0.5, linestyle="-", zorder=10)
+
+    end_year = df["year"].max()
+    all_years = df["year"].unique()
+    plt.xticks(
+        all_years,
+        [
+            str(year) if (int(year) % 5 == 0 or year == end_year) else ""
+            for year in all_years
+        ],
+    )
 
     plt.tight_layout()
 
@@ -147,12 +131,14 @@ def generate_plot(df):
         0.08, 0.02, footer_text, wrap=True, ha="left", va="bottom", fontsize=10
     )
 
-    plt.subplots_adjust(bottom=0.15)
+    plt.subplots_adjust(bottom=0.1)
 
     plt.savefig(
-        ("Statistics Sweden (SCB) "
-         "annual Immigration and Emigration 2000-2023"
-         ".svg"),
+        (
+            "Statistics Sweden (SCB) "
+            "annual Immigration and Emigration 2000-2023"
+            ".svg"
+        ),
         dpi=150,
         bbox_inches="tight",
     )
