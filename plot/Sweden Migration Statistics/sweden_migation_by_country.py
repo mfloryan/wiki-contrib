@@ -1,123 +1,12 @@
 import math
-from datetime import timedelta
 
 import matplotlib.font_manager as fm
 import matplotlib.pyplot as plt
-import pandas as pd
-import requests
-import requests_cache
 from dateutil import parser
 from matplotlib.patches import Patch
 
 from colours import BangWongColors
-
-
-def transform_data(response_data, metadata):
-    key_variables = [
-        item
-        for item in metadata["variables"]
-        if item["code"] != "ContentsCode"
-    ]
-
-    contents_values = next(
-        item["valueTexts"]
-        for item in metadata["variables"]
-        if item["code"] == "ContentsCode"
-    )
-
-    mappings = {
-        var["text"]
-        .lower()
-        .replace(" ", "_"): dict(zip(var["values"], var["valueTexts"]))
-        for var in key_variables
-        if "values" in var
-        and "valueTexts" in var
-        and not var.get("time", False)
-    }
-
-    records = []
-    for item in response_data["data"]:
-        record = dict(
-            zip(
-                [
-                    var["text"].lower().replace(" ", "_")
-                    for var in key_variables
-                ],
-                item["key"],
-            )
-        )
-
-        for i, value in enumerate(item["values"]):
-            record[contents_values[i].lower()] = value
-
-        records.append(record)
-
-    df = pd.DataFrame(records)
-
-    # Convert numeric columns - all content value columns
-    for content_value in contents_values:
-        df[content_value.lower()] = pd.to_numeric(df[content_value.lower()])
-
-    # Convert time variable if it exists
-    time_var = next(
-        (
-            var["text"].lower().replace(" ", "_")
-            for var in key_variables
-            if var.get("time", False)
-        ),
-        None,
-    )
-    if time_var:
-        df[time_var] = pd.to_numeric(df[time_var])
-
-    # Apply mappings for each variable
-    for var in key_variables:
-        col = var["text"].lower().replace(" ", "_")
-        if col in df.columns and col in mappings:
-            df[col] = df[col].map(mappings[col])
-
-    return df
-
-
-def load_data():
-    url = (
-        "https://api.scb.se/OV0104/v1/doris/en"
-        "/ssd/START/BE/BE0101/BE0101J/ImmiEmiFod"
-    )
-    query = {
-        "query": [],
-        "response": {"format": "json"},
-    }
-
-    metadata_r = requests.get(url, timeout=None)
-    metadata_r.raise_for_status()
-    metadata = metadata_r.json()
-
-    for item in metadata["variables"]:
-        if item.get("elimination", False) is True:
-            query["query"].append(
-                {
-                    "code": item["code"],  # Use the code from metadata
-                    "selection": {
-                        "filter": "item",
-                        "values": item[
-                            "values"
-                        ],  # Use the values array from metadata
-                    },
-                }
-            )
-
-    response = requests.post(url, json=query, timeout=None)
-    response.raise_for_status()
-    return (metadata, response.json())
-
-
-requests_cache.install_cache(
-    cache_name="../../http_cache",
-    backend="filesystem",
-    expire_after=timedelta(days=30),
-    allowable_methods=("GET", "POST"),
-)
+from statistics_sweden import StatisticsSwedenAPI
 
 
 def configure_plots():
@@ -463,8 +352,12 @@ def plot_asylum_seekers_migration(df_summed, footer_text):
 
 
 # MARK: Main
-(metadata, data) = load_data()
-df = transform_data(data, metadata)
+
+api_client = StatisticsSwedenAPI(
+    "https://api.scb.se/OV0104/v1/doris/en/"
+    "ssd/START/BE/BE0101/BE0101J/ImmiEmiFod"
+)
+(df, metadata) = api_client.get_dataframe()
 df = df[df["country_of_birth"] != "total"].copy()
 
 country_name_fixes = {
@@ -517,10 +410,10 @@ significant_countries_out = significant_countries_out.sort_values(
 configure_plots()
 
 footer_text = (
-    f"Source: {data['metadata'][0]['source']}"
-    f" - {data['metadata'][0]['label']}"
-    f" ({data['metadata'][0]['infofile']}) - "
-    f"Updated: {parser.isoparse(data['metadata'][0]['updated'])
+    f"Source: {metadata[0]['source']}"
+    f" - {metadata[0]['label']}"
+    f" ({metadata[0]['infofile']}) - "
+    f"Updated: {parser.isoparse(metadata[0]['updated'])
                 .strftime('%-d %b %Y')}"
 )
 
