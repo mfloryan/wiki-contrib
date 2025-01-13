@@ -87,10 +87,10 @@ def generate_plot(df):
     ax = plt.gca()
 
     plt.bar(
-        df["year"], yearly_totals["in"], color="#4A90E2", label="immigration"
+        df["year"], yearly_totals["in"], color="#0072B2", label="immigration"
     )
     plt.bar(
-        df["year"], -yearly_totals["out"], color="#E27A4A", label="emigration"
+        df["year"], -yearly_totals["out"], color="#D55E00", label="emigration"
     )
 
     plt.title("Swedish migration per year ", fontweight="bold")
