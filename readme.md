@@ -22,3 +22,7 @@ This repository keeps the source files and any tools I use to automate generatio
 ## Source of ideas for tasks
 
 - [Category:Images_requiring_an_update](https://commons.wikimedia.org/wiki/Category:Images_requiring_an_update)
+
+## Resources
+
+- [Coloring for Colorblindness](https://davidmathlogic.com/colorblind/#%23D81B60-%231E88E5-%23FFC107-%23004D40)
