@@ -32,10 +32,16 @@ def generate_plot(df, metadata):
     ax = plt.gca()
 
     plt.bar(
-        df["year"], yearly_totals["immigrations"], color=BangWongColors.BLUE, label="immigration"
+        df["year"],
+        yearly_totals["immigrations"],
+        color=BangWongColors.BLUE,
+        label="immigration",
     )
     plt.bar(
-        df["year"], -yearly_totals["emigrations"], color=BangWongColors.RED_ORANGE, label="emigration"
+        df["year"],
+        -yearly_totals["emigrations"],
+        color=BangWongColors.RED_ORANGE,
+        label="emigration",
     )
 
     plt.title("Swedish migration per year ", fontweight="bold")
@@ -97,14 +103,16 @@ api_client = StatisticsSwedenAPI(
 )
 
 fields = {
-    "Kon": ["1","2"],
+    "Kon": ["1", "2"],
     "Fodelseland": ["TOT"],
 }
 
 df, metadata = api_client.get_dataframe(fields)
 
 yearly_totals = (
-    df.groupby("year").agg({"immigrations": "sum", "emigrations": "sum"}).reset_index()
+    df.groupby("year")
+    .agg({"immigrations": "sum", "emigrations": "sum"})
+    .reset_index()
 )
 
 generate_plot(yearly_totals, metadata)
