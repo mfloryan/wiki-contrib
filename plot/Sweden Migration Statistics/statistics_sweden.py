@@ -1,5 +1,5 @@
 from datetime import timedelta
-from typing import Tuple
+from typing import Dict, Tuple
 
 import pandas as pd
 import requests
@@ -22,9 +22,7 @@ class StatisticsSwedenAPI:
     ) -> Tuple[pd.DataFrame, dict]:
         query = {"query": [], "response": {"format": "json"}}
 
-        metadata_r = requests.get(self.base_url, timeout=None)
-        metadata_r.raise_for_status()
-        metadata = metadata_r.json()
+        metadata = self._get_metadata()
 
         for item in metadata["variables"]:
             field_code = item["code"]
@@ -65,6 +63,19 @@ class StatisticsSwedenAPI:
             self._transform_data(response_data, metadata),
             response_data["metadata"],
         )
+
+    def show_fields(self):
+        metadata = self._get_metadata()
+        print(metadata)
+        for item in metadata["variables"]:
+            field_code = item["code"]
+            field_values = item["values"]
+            print(field_code, field_values)
+
+    def _get_metadata(self) -> Dict:
+        metadata_r = requests.get(self.base_url, timeout=None)
+        metadata_r.raise_for_status()
+        return metadata_r.json()
 
     @staticmethod
     def _transform_data(response_data: dict, metadata: dict) -> pd.DataFrame:
