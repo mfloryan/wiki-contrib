@@ -1,66 +1,11 @@
-from datetime import timedelta
-import requests
-import requests_cache
-import pandas as pd
 import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 
-
-def load_data():
-    url = (
-        "https://api.scb.se/"
-        "OV0104/v1/doris/sv/ssd/START/"
-        "BE/BE0101/BE0101J/ImmiEmiFod"
-    )
-    query = {
-        "query": [
-            {
-                "code": "Fodelseland",
-                "selection": {
-                    "filter": "vs:LandISOAlfa2-96TotA",
-                    "values": ["TOT"],
-                },
-            },
-            {
-                "code": "Kon",
-                "selection": {"filter": "item", "values": ["1", "2"]},
-            },
-        ],
-        "response": {"format": "json"},
-    }
-
-    response = requests.post(url, json=query, timeout=None)
-    response.raise_for_status()
-    return response.json()
+from colours import BangWongColors
+from statistics_sweden import StatisticsSwedenAPI
 
 
-def process_json_to_df(data_json):
-    rows = []
-    for entry in data_json["data"]:
-        _, gender, year = entry["key"]
-        invandringar, utvandringar = entry["values"]
-
-        rows.append(
-            {
-                "gender": gender,
-                "year": year,
-                "in": int(invandringar),
-                "out": int(utvandringar),
-            }
-        )
-
-    return pd.DataFrame(rows)
-
-
-requests_cache.install_cache(
-    cache_name="../../http_cache",
-    backend="filesystem",
-    expire_after=timedelta(days=30),
-    allowable_methods=("GET", "POST"),
-)
-
-
-def generate_plot(df):
+def generate_plot(df, metadata):
 
     fm.fontManager.addfont(
         "/Users/mfloryan/Library/Fonts/LiberationSans-Regular.ttf"
@@ -87,10 +32,10 @@ def generate_plot(df):
     ax = plt.gca()
 
     plt.bar(
-        df["year"], yearly_totals["in"], color="#0072B2", label="immigration"
+        df["year"], yearly_totals["immigrations"], color=BangWongColors.BLUE, label="immigration"
     )
     plt.bar(
-        df["year"], -yearly_totals["out"], color="#D55E00", label="emigration"
+        df["year"], -yearly_totals["emigrations"], color=BangWongColors.RED_ORANGE, label="emigration"
     )
 
     plt.title("Swedish migration per year ", fontweight="bold")
@@ -122,9 +67,9 @@ def generate_plot(df):
     plt.tight_layout()
 
     footer_text = (
-        f"Source: Statistics Sweden {data['metadata'][0]['source']}"
-        f" - {data['metadata'][0]['label']}"
-        f" ({data['metadata'][0]['infofile']})"
+        f"Source: {metadata[0]['source']}"
+        f" - {metadata[0]['label']}"
+        f" ({metadata[0]['infofile']})"
     )
 
     plt.figtext(
@@ -145,11 +90,21 @@ def generate_plot(df):
     plt.close()
 
 
-data = load_data()
-df = process_json_to_df(data)
-
-yearly_totals = (
-    df.groupby("year").agg({"in": "sum", "out": "sum"}).reset_index()
+api_client = StatisticsSwedenAPI(
+    "https://api.scb.se/"
+    "OV0104/v1/doris/en/ssd/START/"
+    "BE/BE0101/BE0101J/ImmiEmiFod"
 )
 
-generate_plot(yearly_totals)
+fields = {
+    "Kon": ["1","2"],
+    "Fodelseland": ["TOT"],
+}
+
+df, metadata = api_client.get_dataframe(fields)
+
+yearly_totals = (
+    df.groupby("year").agg({"immigrations": "sum", "emigrations": "sum"}).reset_index()
+)
+
+generate_plot(yearly_totals, metadata)
