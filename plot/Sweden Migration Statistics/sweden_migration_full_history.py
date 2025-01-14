@@ -1,3 +1,4 @@
+import locale
 from dateutil import parser
 from matplotlib import font_manager as fm
 from matplotlib import pyplot as plt
@@ -54,7 +55,7 @@ def add_footer(fig, text):
     fig.tight_layout(rect=[0, 0.02, 1, 1])
 
 
-def plot_sweden_migration(df, footer_text):
+def plot_sweden_migration(df, footer_text, lang="en"):
     migration_data = df[["year", "immigrations", "emigrations"]].dropna()
 
     # Create figure and axis
@@ -66,14 +67,14 @@ def plot_sweden_migration(df, footer_text):
         -migration_data["emigrations"],
         color=BangWongColors.ORANGE,
         width=1,
-        label="Emigration",
+        label=TRANSLATIONS[lang]["emigration"],
     )
     ax.bar(
         migration_data["year"],
         migration_data["immigrations"],
         color=BangWongColors.LIGHT_BLUE,
         width=1,
-        label="Immigration",
+        label=TRANSLATIONS[lang]["immigration"],
     )
 
     ax.plot(
@@ -82,15 +83,15 @@ def plot_sweden_migration(df, footer_text):
         color=BangWongColors.BLACK,
         alpha=0.8,
         linewidth=1,
-        label="Net Migration",
+        label=TRANSLATIONS[lang]["net_migration"],
     )
 
     ax.axhline(y=0, color="black", linewidth=1, alpha=0.6)
 
-    ax.set_ylabel("Number of People per Year", ha="left", y=0)
+    ax.set_ylabel(TRANSLATIONS[lang]["y_label"], ha="left", y=0)
     ax.set_title(
         (
-            f"Immigration and Emigration in Sweden "
+            TRANSLATIONS[lang]["title"] + " "
             f"({migration_data["year"].min()} - "
             f"{migration_data["year"].max()})"
         ),
@@ -102,8 +103,7 @@ def plot_sweden_migration(df, footer_text):
     ax.xaxis.set_major_locator(MultipleLocator(10))
     ax.yaxis.set_major_locator(MultipleLocator(20_000))
     ax.set_xlim(
-        migration_data["year"].min() - 0.5,
-        migration_data["year"].max() + 0.5
+        migration_data["year"].min() - 0.5, migration_data["year"].max() + 0.5
     )
 
     ax.legend(reverse=True)
@@ -111,6 +111,67 @@ def plot_sweden_migration(df, footer_text):
 
     return fig
 
+
+def format_date(date_str, lang="en"):
+    try:
+        current_locale = locale.getlocale()
+        locale.setlocale(locale.LC_TIME, LOCALE_MAPPING[lang])
+
+        date = parser.isoparse(date_str)
+        formatted_date = date.strftime("%-d %b %Y")
+
+        locale.setlocale(locale.LC_TIME, current_locale)
+
+        return formatted_date
+    except locale.Error:
+        return parser.isoparse(date_str).strftime("%-d %b %Y")
+
+
+def format_footer(metadata, lang="en"):
+    return (
+        f"{TRANSLATIONS[lang]['source']}: {metadata[0]['source']}"
+        f" - {metadata[0]['label']}"
+        f" ({metadata[0]['infofile']}) - "
+        f"{TRANSLATIONS[lang]['updated']}: "
+        f"{format_date(metadata[0]['updated'], lang)}"
+    )
+
+
+TRANSLATIONS = {
+    "en": {
+        "title": "Immigration and Emigration in Sweden",
+        "y_label": "Number of People per Year",
+        "immigration": "Immigration",
+        "emigration": "Emigration",
+        "net_migration": "Net Migration",
+        "source": "Source",
+        "updated": "Updated",
+    },
+    "pl": {
+        "title": "Imigracja i Emigracja w Szwecji",
+        "y_label": "Liczba Osób Rocznie",
+        "immigration": "Imigracja",
+        "emigration": "Emigracja",
+        "net_migration": "Migracja Netto",
+        "source": "Źródło",
+        "updated": "Zaktualizowano",
+    },
+    "sv": {
+        "title": "Invandrare och utvandrare, Sverige",
+        "y_label": "Antal personer per år",
+        "immigration": "Invandrare",
+        "emigration": "Utvandrare",
+        "net_migration": "Nettomigration",
+        "source": "Källa",
+        "updated": "Uppdaterad",
+    },
+}
+
+LOCALE_MAPPING = {
+    "en": "en_GB.UTF-8",
+    "pl": "pl_PL.UTF-8",
+    "sv": "sv_SE.UTF-8",
+}
 
 api_client = StatisticsSwedenAPI(
     "https://api.scb.se/OV0104/v1/doris/en/"
@@ -131,25 +192,13 @@ fields = {
 pd, metadata = api_client.get_dataframe(fields)
 
 configure_plots()
-footer = (
-    f"Source: {metadata[0]['source']}"
-    f" - {metadata[0]['label']}"
-    f" ({metadata[0]['infofile']}) - "
-    f"Updated: {parser.isoparse(metadata[0]['updated'])
-                .strftime('%-d %b %Y')}"
-)
 
-fig = plot_sweden_migration(pd, footer)
-
-fig.savefig(
-    (
-        "Annual Immigration and Emigration "
-        f"in Sweden ({pd['year'].min()}-{pd['year'].max()})"
-        ".svg"
-    ),
-    dpi=150,
-    bbox_inches="tight",
-)
-
-plt.show()
-plt.close()
+for lang in ["en", "pl", "sv"]:
+    footer = format_footer(metadata, lang)
+    fig = plot_sweden_migration(pd, footer, lang)
+    plt.savefig(
+        f"Annual Immigration and Emigration in Sweden (1875-2023)-{lang}.svg",
+        dpi=150,
+        bbox_inches="tight",
+    )
+    plt.close()
