@@ -6,7 +6,7 @@ from dateutil import parser
 from matplotlib.patches import Patch
 
 from colours import BangWongColors
-from statistics_sweden import StatisticsSwedenAPI
+from statistics_sweden import StatisticsSweden
 
 
 def configure_plots():
@@ -353,11 +353,7 @@ def plot_asylum_seekers_migration(df_summed, footer_text):
 
 # MARK: Main
 
-api_client = StatisticsSwedenAPI(
-    "https://api.scb.se/OV0104/v1/doris/en/"
-    "ssd/START/BE/BE0101/BE0101J/ImmiEmiFod"
-)
-(df, metadata) = api_client.get_dataframe()
+(df, metadata) = api_client.get_dataframe(StatisticsSweden.Endpoint.MIGRATION_BIRTH_COUNTRY)
 df = df[df["country_of_birth"] != "total"].copy()
 
 country_name_fixes = {

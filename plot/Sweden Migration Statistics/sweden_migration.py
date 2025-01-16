@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import matplotlib.font_manager as fm
 
 from colours import BangWongColors
-from statistics_sweden import StatisticsSwedenAPI
+from statistics_sweden import StatisticsSweden
 
 
 def generate_plot(df, metadata):
@@ -96,18 +96,16 @@ def generate_plot(df, metadata):
     plt.close()
 
 
-api_client = StatisticsSwedenAPI(
-    "https://api.scb.se/"
-    "OV0104/v1/doris/en/ssd/START/"
-    "BE/BE0101/BE0101J/ImmiEmiFod"
-)
+api_client = StatisticsSweden()
 
 fields = {
     "Kon": ["1", "2"],
     "Fodelseland": ["TOT"],
 }
 
-df, metadata = api_client.get_dataframe(fields)
+df, metadata = api_client.get_dataframe(
+    StatisticsSweden.Endpoint.MIGRATION_BIRTH_COUNTRY, fields
+)
 
 yearly_totals = (
     df.groupby("year")

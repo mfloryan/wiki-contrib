@@ -5,7 +5,7 @@ from matplotlib import pyplot as plt
 from matplotlib.ticker import MultipleLocator
 
 from colours import BangWongColors
-from statistics_sweden import StatisticsSwedenAPI
+from statistics_sweden import StatisticsSweden
 
 
 def configure_plots():
@@ -173,10 +173,7 @@ LOCALE_MAPPING = {
     "sv": "sv_SE.UTF-8",
 }
 
-api_client = StatisticsSwedenAPI(
-    "https://api.scb.se/OV0104/v1/doris/en/"
-    "ssd/START/BE/BE0101/BE0101G/BefUtvKon1749"
-)
+api_client = StatisticsSweden()
 
 fields = {
     "Kon": ["1+2"],
@@ -189,7 +186,9 @@ fields = {
     ],
 }
 
-pd, metadata = api_client.get_dataframe(fields)
+pd, metadata = api_client.get_dataframe(
+    StatisticsSweden.Endpoint.POPULATION_CHANGES, fields
+)
 
 configure_plots()
 

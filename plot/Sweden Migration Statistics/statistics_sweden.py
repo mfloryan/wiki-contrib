@@ -1,4 +1,5 @@
 from datetime import timedelta
+from enum import Enum
 from typing import Dict, Tuple
 
 import pandas as pd
@@ -6,10 +7,26 @@ import requests
 import requests_cache
 
 
-class StatisticsSwedenAPI:
-    def __init__(self, base_url: str):
-        self.base_url = base_url
+class StatisticsSweden:
+    BASE_URL = "https://api.scb.se/OV0104/v1/doris/en/ssd/"
 
+    class Endpoint(Enum):
+
+        POPULATION_REGION = "BE/BE0101/BE0101A/BefolkningNy"
+        POPULATION_CITIZENSHIP_GROUP = "BE/BE0101/BE0101A/FolkmMedblandHVD"
+        POPULATION_BIRTH_COUNTRY = "BE/BE0101/BE0101E/FodelselandArK"
+        MIGRATION_BIRTH_COUNTRY = "BE/BE0101/BE0101J/ImmiEmiFod"
+        FOREIGN_CITIZENS_COUNTRY = "BE/BE0101/BE0101F/UtlmedbR"
+        POPULATION_CHANGES = "BE/BE0101/BE0101G/BefUtvKon1749"
+        POPULATION_KEY = "BE/BE0101/BE0101X/NTBE0101"
+        POPULATION_REGION_BIRTH = "BE/BE0101/BE0101E/FolkmRegFlandK"
+        ENERGY_EL_SUPPLY = "EN/EN0108/EN0108A/EltillfM"
+
+        @property
+        def url(self):
+            return StatisticsSweden.BASE_URL + self.value
+
+    def __init__(self):
         requests_cache.install_cache(
             cache_name="../../http_cache",
             backend="filesystem",
@@ -18,11 +35,10 @@ class StatisticsSwedenAPI:
         )
 
     def get_dataframe(
-        self, selected_fields: dict = None
+        self, endpoint: Endpoint, selected_fields: dict = None
     ) -> Tuple[pd.DataFrame, dict]:
         query = {"query": [], "response": {"format": "json"}}
-
-        metadata = self._get_metadata()
+        metadata = self._get_metadata(endpoint.url)
 
         for item in metadata["variables"]:
             field_code = item["code"]
@@ -55,7 +71,7 @@ class StatisticsSwedenAPI:
                     }
                 )
 
-        response = requests.post(self.base_url, json=query, timeout=None)
+        response = requests.post(endpoint.url, json=query, timeout=None)
         response.raise_for_status()
         response_data = response.json()
 
@@ -64,16 +80,13 @@ class StatisticsSwedenAPI:
             response_data["metadata"],
         )
 
-    def show_fields(self):
-        metadata = self._get_metadata()
-        print(metadata)
+    def show_fields(self, endpoint: Endpoint):
+        metadata = self._get_metadata(endpoint.url)
         for item in metadata["variables"]:
-            field_code = item["code"]
-            field_values = item["values"]
-            print(field_code, field_values)
+            print(f"{item['code']}: {item['values']}")
 
-    def _get_metadata(self) -> Dict:
-        metadata_r = requests.get(self.base_url, timeout=None)
+    def _get_metadata(self, url: str) -> Dict:
+        metadata_r = requests.get(url, timeout=None)
         metadata_r.raise_for_status()
         return metadata_r.json()
 
