@@ -45,21 +45,25 @@ class StatisticsSweden:
             field_values = item["values"]
 
             if selected_fields and field_code in selected_fields:
-                valid_values = [
-                    value
-                    for value in selected_fields[field_code]
-                    if value in field_values
-                ]
-                if valid_values:
-                    query["query"].append(
-                        {
-                            "code": field_code,
-                            "selection": {
-                                "filter": "item",
-                                "values": valid_values,
-                            },
-                        }
-                    )
+                values = (
+                    selected_fields[field_code][1]
+                    if isinstance(selected_fields[field_code], tuple)
+                    else selected_fields[field_code]
+                )
+                field = {
+                    "code": field_code,
+                    "selection": {
+                        "filter": (
+                            selected_fields[field_code][0]
+                            if isinstance(selected_fields[field_code], tuple)
+                            else "item"
+                        ),
+                        "values": values,
+                    },
+                }
+
+                query["query"].append(field)
+
             elif item.get("elimination", False):
                 query["query"].append(
                     {
@@ -149,7 +153,12 @@ class StatisticsSweden:
 
         # Convert time dimension if it exists
         if time_dimension and time_dimension in df.columns:
-            df[time_dimension] = pd.to_numeric(df[time_dimension])
+            if time_dimension == "year":
+                df[time_dimension] = pd.to_numeric(df[time_dimension])
+            if time_dimension == "month":
+                df[time_dimension] = pd.to_datetime(
+                    df[time_dimension], format="%YM%m"
+                )
 
         # Apply mappings to dimension columns
         for dimension in dimensions:
