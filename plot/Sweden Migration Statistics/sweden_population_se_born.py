@@ -80,7 +80,7 @@ def plot_se_born_rate(df, footer_text):
         color=BangWongColors.BLUE,
         linewidth=2,
         marker="o",
-        markersize=6,
+        markersize=8,
     )
 
     ax.set_title("Percentage of Swedish-Born Population in Sweden (2000-2023)")
@@ -145,7 +145,10 @@ footer = format_footer(metadata)
 configure_plots()
 fig = plot_se_born_rate(df_wide, footer)
 
-fig.savefig("Percentage of Swedish-Born Population in Sweden (2000-2023).svg",  dpi=150,
-        bbox_inches="tight")
+fig.savefig(
+    "Percentage of Swedish-Born Population in Sweden (2000-2023).svg",
+    dpi=150,
+    bbox_inches="tight",
+)
 
 plt.show()
