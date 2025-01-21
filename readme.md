@@ -4,6 +4,8 @@ A collection of Wikipedia contributions - maps, charts, diagrams, etc..
 
 This repository keeps the source files and any tools I use to automate generation of content.
 
+I contribute as [User:mfloryan](https://commons.wikimedia.org/wiki/User:Mfloryan).
+
 ## maps
 
 ## charts
@@ -15,7 +17,7 @@ This repository keeps the source files and any tools I use to automate generatio
 - [x] <https://commons.wikimedia.org/wiki/File:Europe-GDP-PPP-per-capita-map.png>
 - [x] [File:16-segmente.png](https://commons.wikimedia.org/wiki/File:16-segmente.png) => [File:16-segment_display.svg](https://commons.wikimedia.org/wiki/File:16-segment_display.svg)
 
-## Useful Wikpedia and Commons resources
+## Useful Wikipedia and Commons resources
 
 - [Template:Image_generation](https://commons.wikimedia.org/wiki/Template:Image_generation)
 
